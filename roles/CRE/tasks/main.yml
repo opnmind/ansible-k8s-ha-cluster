@@ -1,0 +1,48 @@
+---
+
+- name: Install docker dependecies.
+  yum:
+    name: 
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2    
+    state: latest
+  tags: CRE
+
+- name: Add docker repo.
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+  tags: CRE
+
+- name: Install docker.
+  yum:
+    name: docker-ce-18.06.2.ce-3.el7
+    state: present
+  tags: CRE
+
+- name: Start docker service.
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+  tags: CRE
+
+- name: Creates docker.service.d directory.
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  tags: CRE
+
+- name: Extend docker logging behavior.
+  template:
+    src: docker-service-override.j2
+    dest: /etc/systemd/system/docker.service.d/logging-override.conf
+  tags: CRE
+
+- name: Start docker service.
+  systemd:
+    name: docker
+    state: started
+    daemon_reload: yes
+  tags: CRE

@@ -1,0 +1,3 @@
+---
+- import_playbook: kubernetes-master.yml
+- import_playbook: kubernetes-compute.yml

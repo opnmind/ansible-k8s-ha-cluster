@@ -1,0 +1,8 @@
+---
+- hosts: kubernetes_compute_nodes
+  become: yes
+  roles:
+   - prerequisites
+   - CRE 
+   - kubelet
+   #- kubeproxy

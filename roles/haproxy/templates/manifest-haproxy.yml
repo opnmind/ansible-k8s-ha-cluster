@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    k8s-app: ha-ip-apiservices
+  name: ha-ip-apiservices
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  terminationGracePeriodSeconds: 5
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  initContainers:
+  - name: setup-sysctl-nobind
+    command:
+    - sh
+    - -c
+    - sysctl -w net.ipv4.ip_nonlocal_bind=1
+    image: registry.example/busybox:1.30
+    resources:
+      limits:
+        cpu: 10m
+        memory: 50Mi
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      privileged: true
+  containers:
+  - name: haproxy
+    image: registry.example/b1systems/haproxy:k8scp-1.1
+    resources: {}
+    env:
+    - name: KUBEAPI_VIP
+      value: "80.158.52.244,192.168.0.90"
+    - name: HAPROXY_BACKENDS
+      value: "192.168.0.70,192.168.0.71,192.168.0.72"
+  - name: keepalived
+    image: registry.example/b1systems/keepalived:k8scp-1.1
+    resources: {}
+    env:
+    - name: KEEPALIVED_VIP
+      value: "80.158.52.244,192.168.0.90"
+    - name: KEEPALIVED_INTERFACE
+      value: "eth0" # iface name
+    - name: AUTH_PASSWORD
+      value: "kI1u36eweSf1V0Zp/x+Ihg==" # change it like "head -c16 /dev/urandom | base64"
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+
