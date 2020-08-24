@@ -1,6 +1,6 @@
-# ansible-k8s-ha-cluster
+# ansible-k8s-ha-cluster on OpenTelekomCloud
 
-Ansible scripts to install an kubernetes ha cluster. (draft)
+Ansible scripts to install an kubernetes ha cluster. (draft during a training)
 
 ## Requirements
 
